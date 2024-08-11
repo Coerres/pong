@@ -11,6 +11,15 @@ def animate_ball():
     if ball.right >= screen_width or ball.left <= 0:
         ball_speed_x *= -1
 
+def animate_player():
+    player.y += player_speed
+
+    if player.top <= 0:
+        player.top = 0
+
+    if player.bottom >= screen_height:
+        player.bottom = screen_height        
+
 pygame.init()
 
 screen_width = 1280
@@ -32,6 +41,7 @@ player.midright = (screen_width, screen_height / 2)
 
 ball_speed_x = 6
 ball_speed_y = 6
+player_speed = 0
 
 while True:
     #Check for events
@@ -39,9 +49,22 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+        if event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_UP:
+                player_speed = -6
+            if event.key == pygame.K_DOWN:
+                player_speed = 6
+        if event.type == pygame.KEYUP:
+            if event.key == pygame.K_UP:
+                player_speed = 0
+            if event.key == pygame.K_DOWN:
+                player_speed = 0
+
 
     #Change position of game objects
     animate_ball()
+    animate_player()
+
 
     #Draw game objects
     screen.fill('black')
