@@ -1,4 +1,21 @@
-import pygame, sys
+import pygame, sys, random
+
+def reset_ball(): 
+    global ball_speed_x, ball_speed_y
+    ball.x = screen_width / 2 -10
+    ball.y = random.randint(10, 100)
+    ball_speed_x *= random.choice([-1, 1])
+    ball_speed_y *= random.choice([-1, 1])
+    
+def point_won(winner):
+    global cpu_points, player_points
+
+    if winner == "cpu":
+        cpu_points += 1
+    if winner == "player":
+        player_points += 1
+
+    reset_ball()
 
 def animate_ball():
     global ball_speed_x, ball_speed_y
@@ -8,7 +25,13 @@ def animate_ball():
     if ball.bottom >= screen_height or ball.top <= 0:
         ball_speed_y *= -1
 
-    if ball.right >= screen_width or ball.left <= 0:
+    if ball.right >= screen_width:
+        point_won("cpu")
+    
+    if ball.left <= 0:
+        point_won("player")
+
+    if ball.colliderect(player) or ball.colliderect(cpu):
         ball_speed_x *= -1
 
 def animate_player():
@@ -18,7 +41,21 @@ def animate_player():
         player.top = 0
 
     if player.bottom >= screen_height:
-        player.bottom = screen_height        
+        player.bottom = screen_height     
+
+def animate_cpu():
+    global cpu_speed
+    cpu.y += cpu_speed
+
+    if ball.centery <= cpu.centery:
+        cpu_speed = -6
+    if ball.centery >= cpu.centery:
+        cpu_speed = 6
+
+    if cpu.top <= 0:
+        cpu.top = 0
+    if cpu.bottom >= screen_height:
+        cpu.bottom = screen_height   
 
 pygame.init()
 
@@ -42,6 +79,11 @@ player.midright = (screen_width, screen_height / 2)
 ball_speed_x = 6
 ball_speed_y = 6
 player_speed = 0
+cpu_speed= 6
+
+cpu_points, player_points = 0, 0
+
+score_font = pygame.font.Font(None, 100)
 
 while True:
     #Check for events
@@ -64,10 +106,17 @@ while True:
     #Change position of game objects
     animate_ball()
     animate_player()
+    animate_cpu()
 
 
     #Draw game objects
     screen.fill('black')
+
+    cpu_score_surface = score_font.render(str(cpu_points), True, "white")
+    player_score_surface = score_font.render(str(player_points), True, "white")
+    screen.blit(cpu_score_surface, (screen_width/4, 20))
+    screen.blit(player_score_surface, (3* screen_width/4, 20))
+
     pygame.draw.aaline(screen, 'white', (screen_width / 2,0), (screen_width / 2, screen_height))
     pygame.draw.ellipse(screen, 'white', ball)
     pygame.draw.rect(screen, 'white', cpu)
