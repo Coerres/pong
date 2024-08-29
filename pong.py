@@ -18,7 +18,21 @@ def animate_player():
         player.top = 0
 
     if player.bottom >= screen_height:
-        player.bottom = screen_height        
+        player.bottom = screen_height     
+
+def animate_cpu():
+    global cpu_speed
+    cpu.y += cpu_speed
+
+    if ball.centery <= cpu.centery:
+        cpu_speed = -6
+    if ball.centery >= cpu.centery:
+        cpu_speed = 6
+
+    if cpu.top <= 0:
+        cpu.top = 0
+    if cpu.bottom >= screen_height:
+        cpu.bottom = screen_height   
 
 pygame.init()
 
@@ -42,6 +56,7 @@ player.midright = (screen_width, screen_height / 2)
 ball_speed_x = 6
 ball_speed_y = 6
 player_speed = 0
+cpu_speed= 6
 
 while True:
     #Check for events
@@ -64,6 +79,7 @@ while True:
     #Change position of game objects
     animate_ball()
     animate_player()
+    animate_cpu()
 
 
     #Draw game objects
